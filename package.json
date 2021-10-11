@@ -1,5 +1,5 @@
 {
-  "name": "TS-Identity",
+  "name": "ts-identity",
   "version": "1.0.0",
   "description": "typescript type layer for role based applications",
   "main": "index.ts",
@@ -7,8 +7,15 @@
   "author": "Blas <macizomedia@gmail.com>",
   "license": "MIT",
   "private": false,
+  "scripts": {
+    "start:dev": "nodemon"
+  },
   "dependencies": {
     "@types/node": "^16.10.3",
     "typescript": "^4.4.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.13",
+    "ts-node": "^10.2.1"
   }
 }
