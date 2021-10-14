@@ -6,7 +6,10 @@
         "id": 53,
         "isPrivate": false,
         "profile": "",
-        "updatedAt": 0
+        "updatedAt": 0,
+        "followers": [""],
+        "editor": [""],
+        "admin": ""
     },
     {
         "name": "empanadas",
@@ -15,7 +18,10 @@
         "id": 43,
         "isPrivate": false,
         "profile": "",
-        "updatedAt": 0
+        "updatedAt": 0,
+        "followers": [""],
+        "editor": [""],
+        "admin": ""
     },
     {
         "name": "bollos",
@@ -24,7 +30,10 @@
         "id": 33,
         "isPrivate": false,
         "profile": "",
-        "updatedAt": 0
+        "updatedAt": 0,
+        "followers": [""],
+        "editor": [""],
+        "admin": ""
     },
     {
         "name": "Hallacas",
@@ -33,7 +42,10 @@
         "id": 23,
         "isPrivate": false,
         "profile": "",
-        "updatedAt": 0
+        "updatedAt": 0,
+        "followers": [""],
+        "editor": [""],
+        "admin": [""]
     },
     {
         "name": "cachapas",
@@ -42,6 +54,9 @@
         "id": 13,
         "isPrivate": false,
         "profile": "",
-        "updatedAt": 0
+        "updatedAt": 0,
+        "followers": [""],
+        "editor": [""],
+        "admin": [""]
     }
 ]

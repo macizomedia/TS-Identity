@@ -1,33 +1,13 @@
-import { NewUser } from './user-services';
-import * as data from './data.json';
+import { api } from './user-services.js';
+import { Activity, Idea, Project, State, Subject, Group, Post } from './types';
 
-let TheArepas = {
-    name: 'arepas',
-    createdAt: Date.now(),
-    description: 'something',
-    id: 23,
-    isPrivate: false,
-    profile: '',
-    updatedAt: 0,
-};
-let TheEmpanadas = {
-    name: 'empanadas',
-    createdAt: Date.now(),
-    description: 'Taste like the caribbean',
-    id: 33,
-    isPrivate: true,
-    profile: '',
-    updatedAt: 0,
-};
-let TheTamales = {
-    name: 'tamales',
-    createdAt: Date.now(),
-    description: 'Taste like yukatan',
-    id: 43,
-    isPrivate: false,
-    profile: '',
-    updatedAt: 0,
-};
-const Guest23 = new NewUser('Blas');
+// Consumer
+api<any[]>('https://jsonplaceholder.typicode.com/posts')
+    .then((arr) => {
+        console.log(arr);
+    })
+    .catch((error) => {
+        console.log(error);
+    });
 
-console.log(Guest23.getByProperty('isPrivate', true))
+console.log('there is something...');

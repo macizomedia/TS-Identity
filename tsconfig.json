@@ -1,19 +1,6 @@
 {
     "compilerOptions": {
         "experimentalDecorators": true,
-        "target": "ES2015",
-        "lib": ["es6"],
-        "module": "commonjs",
-        "rootDir": "src",
-        "resolveJsonModule": true,
-        "allowJs": true,
-        "outDir": "build",
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
-        "strict": true,
-        "noImplicitAny": true,
-        "skipLibCheck": true,
-        "baseUrl": "src"
     },
-    "include": ["src/**/*"]
+    "extends": "@tsconfig/node16/tsconfig.json"
 }

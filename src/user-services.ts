@@ -1,4 +1,26 @@
-import { Activity, Idea, Project, State, Subject, Group, Post } from 'types';
+import { updateOne } from './store.js';
+import { Activity, Idea, Project, State, Subject, Group, Post } from './types';
+import fetch from 'node-fetch';
+
+// Standard variation
+export function api<T>(url: string): Promise<T> {
+    return fetch(
+        url,
+        {
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+        }
+    ).then((response) => {
+        if (!response.ok) {
+            throw new Error(response.statusText);
+        }
+        return response.json() as Promise<T>;
+    });
+}
+
+let Groups: Group[];
 
 Array.prototype.getBy = function <T, P extends keyof T>(
     this: T[],
@@ -81,17 +103,17 @@ function registerEndpoint<T>(constructor: Constructor<T>) {
 export abstract class User {
     name: string;
     points: number;
-    groups: Group[]; 
+    groups: Group[];
     activities: Activity[];
     ideas: Idea[];
-    posts: Post[]
+    posts: Post[];
     constructor(name: string) {
         this.points = 500;
         this.name = name;
         this.groups = [];
-        this.activities = []
-        this.ideas = []
-        this.posts = []
+        this.activities = [];
+        this.ideas = [];
+        this.posts = [];
     }
     /**
      *
@@ -104,15 +126,13 @@ export abstract class User {
         return group;
     }
     /**
-     * 
+     *
      * @param group To follow a group
      */
-    FollowGroup(group: Group){
-
-    }
+    FollowGroup(group: Group) {}
     CreateIdea(idea: Idea): Idea {
-        this.points += 100
-        return idea
+        this.points += 100;
+        return idea;
     }
     /* 
     Endorse Idea
@@ -137,7 +157,7 @@ export abstract class User {
 }
 
 @registerEndpoint
-export class NewUser extends User {
+export class activeUser extends User {
     constructor(name: string) {
         super(name);
     }
@@ -145,5 +165,3 @@ export class NewUser extends User {
         return this.groups[0];
     }
 }
-
-console.log(httpEndpoints)
