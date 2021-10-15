@@ -73,11 +73,11 @@ export interface Post {
     likes: number;
     createdAt: number;
     updatedAt: number;
-  }
-  
+}
+
 export interface Comment {
-  content: string;
-  createdBy: User['name'];
+    content: string;
+    createdBy: User['name'];
 }
 
 export interface Project {

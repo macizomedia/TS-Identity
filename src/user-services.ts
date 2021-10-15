@@ -2,7 +2,6 @@ import { updateOne } from './store.js';
 import { Activity, Idea, Project, State, Subject, Group, Post } from './types';
 import fetch from 'node-fetch';
 
-// Standard variation
 export function api<T>(url: string): Promise<T> {
     return fetch(
         url,
@@ -20,7 +19,6 @@ export function api<T>(url: string): Promise<T> {
     });
 }
 
-let Groups: Group[];
 
 Array.prototype.getBy = function <T, P extends keyof T>(
     this: T[],
