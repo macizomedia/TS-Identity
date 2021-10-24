@@ -7,7 +7,6 @@
     "author": "Blas <macizomedia@gmail.com>",
     "license": "MIT",
     "type": "module",
-    "private": false,
     "scripts": {
         "start:dev": "nodemon",
         "lint": "eslint . --ext .ts",

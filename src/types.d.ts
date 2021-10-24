@@ -15,21 +15,60 @@ enum Role {
     superUser,
 }
 
-export interface User {
-    id: number;
+type BaseSubject = {
+    id: string | number;
     name: string;
     email: string;
-    password: string;
-    sumPoints: number;
-    status: Status.pending;
+    profile: string;
     role: Role.user;
-    email_verify_at: number;
-    avatar: string;
-    city: string;
-    sdgs: string;
-    createdAt: number;
-    updatedAt: number;
-    reminders: any[]; // linked to activities
+};
+
+type Settings = {
+    readonly data: {
+        location: string;
+        code: number;
+        jurisdiction: string;
+    };
+};
+
+export interface Subscriber extends BaseSubject {
+    id: number;
+    name: string;
+    profile: string;
+    email: string;
+    password: string;
+    role: Role.user;
+    settings?: Settings;
+
+    email_verify_at?: number;
+    createdAt?: number;
+    updatedAt?: number;
+}
+
+export interface User extends BaseSubject {
+    id: number;
+    name: string;
+    profile: string;
+    email: string;
+    role: Role.user;
+    settings?: Settings;
+    groups: {
+        isFollower: Group['id'][];
+        isAdmin: Group['id'][];
+        isEditor: Group['id'][];
+    };
+    activities: {
+        hasReminder: Pick<Activity, 'timestamps' | 'id' | 'type'>[];
+        isAdmin: Activity['id'][];
+    };
+    ideas: {
+        hasEndorse: Idea['id'][];
+        isAdmin: Idea['id'][];
+    };
+    projects?: Project[];
+    posts?: Post[];
+    logs?: any[];
+    points?: number;
 }
 
 export interface Group {
@@ -40,18 +79,16 @@ export interface Group {
     isPrivate: boolean;
     createdAt: number;
     updatedAt: number;
-    followers: user['name'][];
-    editor: user['name'][];
-    admin: user;
+    followers: number;
+    editors: user['id'][];
+    admin: user['id'];
 }
 
 export interface Activity {
-    id: number;
-    user_id: number;
-    point: number;
+    id?: number;
     title: string;
     description: string;
-    timestamps: number;
+    timestamps?: number;
     type: 'physical' | 'noPhysical';
 }
 
@@ -87,11 +124,13 @@ export interface Project {
     description: string;
     isPrivate: boolean;
 }
+
 type Subject = User | Group;
 
 export interface State {
     subject: Partial<Subject>;
     ideas: Idea[];
+    groups: Group[];
     activities: Activity[];
     projects: Project[];
 }

@@ -7,13 +7,6 @@ enum StatusCode {
     InternalServerError = '500',
 }
 
-const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json; charset=utf-8',
-    'Access-Control-Allow-Credentials': 'true',
-    'X-Requested-With': 'XMLHttpRequest',
-};
-
 const injectToken = (config: any): any => {
     try {
         const token = localStorage.getItem('accessToken');
@@ -28,26 +21,25 @@ const injectToken = (config: any): any => {
 };
 
 export abstract class http {
-    baseUrl: string;
-    url: string;
-    config: RequestInit;
     response: any;
     /**
      *
      * @param base Base URL string
-     * @param url Endpoint
+     * @param endpoint Endpoint
      * @param config Config object with headers and method
      */
-    constructor(base: string, url: string, config: RequestInit) {
-        this.baseUrl = base;
-        this.url = url;
-        this.config = config;
-    }
+    constructor(
+        public baseUrl: string,
+        public endpoint: string,
+        public config: RequestInit
+    ) {}
+
     init<T, K>() {
-        const url = `http://${this.baseUrl}/${this.url}`;
+        /* injectToken(this.config) */
+        const endpoint = `http://${this.baseUrl}/${this.endpoint}`;
         try {
-            api<T, K>(url).then((data) => {
-                this.response = data;
+            api<T, K>(endpoint).then((data) => {
+                this.response = data as T;
             });
         } catch (error) {
             this.handleError(error as unknown as FetchError);
@@ -80,7 +72,7 @@ export abstract class http {
 }
 
 export class httpGet extends http {
-    constructor(base: string, url: string, config: RequestInit) {
-        super(base, url, config);
+    constructor(baseUrl: string, endpoint: string, config: RequestInit) {
+        super(baseUrl, endpoint, config);
     }
 }

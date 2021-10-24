@@ -1,24 +1,28 @@
 import { updateOne } from './store.js';
-import { Activity, Idea, Project, State, Subject, Group, Post } from './types';
+import {
+    Activity,
+    Idea,
+    Project,
+    State,
+    Subject,
+    Group,
+    Post,
+    User,
+} from './types';
 import fetch from 'node-fetch';
 
-export function api<T>(url: string): Promise<T> {
-    return fetch(
-        url,
-        {
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            },
-        }
-    ).then((response) => {
-        if (!response.ok) {
-            throw new Error(response.statusText);
-        }
-        return response.json() as Promise<T>;
+export async function api<T>(url: string): Promise<T> {
+    const response = await fetch(url, {
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        },
     });
+    if (!response.ok) {
+        throw new Error(response.statusText);
+    }
+    return await (response.json() as Promise<T>);
 }
-
 
 Array.prototype.getBy = function <T, P extends keyof T>(
     this: T[],
@@ -46,9 +50,10 @@ export function LogClassName<T>() {
     };
 }
 
-export class ActiveSubject implements State {
+export class ActiveSubjectDraft implements State {
     constructor(
         public subject: Partial<Subject>,
+        public groups: Group[],
         public ideas: Idea[],
         public activities: Activity[],
         public projects: Project[]
@@ -92,74 +97,110 @@ const httpEndpoints: {
     [key: string]: any;
 } = {};
 
+/* Second Setup */
+
 function registerEndpoint<T>(constructor: Constructor<T>) {
     const className = constructor.name;
     const endpointPath = '/' + className.toLowerCase();
     httpEndpoints[endpointPath] = new constructor();
 }
+function second() {
+    console.log('second(): factory evaluated');
+    return function (
+        target: any,
+        propertyKey: string,
+        descriptor: PropertyDescriptor
+    ) {
+        console.log('second(): called');
+    };
+}
 
-export abstract class User {
-    name: string;
-    points: number;
-    groups: Group[];
-    activities: Activity[];
-    ideas: Idea[];
-    posts: Post[];
-    constructor(name: string) {
-        this.points = 500;
-        this.name = name;
-        this.groups = [];
-        this.activities = [];
-        this.ideas = [];
-        this.posts = [];
-    }
+const enumerable = (value: boolean) => {
+    return (
+        target: any,
+        memberName: string,
+        propertyDescriptor: PropertyDescriptor
+    ) => {
+        propertyDescriptor.enumerable = value;
+    };
+};
+function endpoint(id: string) {
+    return function (
+        target: any,
+        memberName: string,
+        propertyDescriptor: PropertyDescriptor
+    ) {
+        /* target.prototype.endpoint = `http://localhost/user/${id}` */
+        console.log(target);
+        console.log(memberName);
+        console.log(propertyDescriptor);
+    };
+}
+
+export abstract class ActiveSubject {
+    constructor(protected user: User) {}
     /**
      *
      * @param group object increase 100 points
      * @returns created group
      */
-    CreateGroup(group: Group): Group {
-        this.points += 100;
-        this.groups.push(group);
-        return group;
+    CreateGroup(groupID: Group['id']): Group['id'] {
+        this.user.points! += 100;
+        this.user.groups.isAdmin.push(groupID);
+        console.log(`group created with id ` + groupID);
+        return groupID;
     }
     /**
      *
      * @param group To follow a group
      */
-    FollowGroup(group: Group) {}
-    CreateIdea(idea: Idea): Idea {
-        this.points += 100;
-        return idea;
+    FollowGroup(groupID: Group['id']) {
+        this.user.groups.isFollower.push(groupID);
     }
-    /* 
-    Endorse Idea
-
-    superUser
-    Projects
-    */
+    /**
+     *
+     * @param activity object increase 100 points
+     * @returns created activity
+     */
+    CreateActivity(activityID: Activity['id']): Activity['id'] {
+        this.user.points! += 100;
+        this.user.activities.isAdmin.push(activityID);
+        return activityID;
+    }
+    /**
+     *
+     * @param activity object increase 100 points
+     * @returns created activity
+     */
+    SetReminderOfActivity(
+        activity: Activity
+    ): Pick<Activity, 'timestamps' | 'id' | 'type'> {
+        this.user.points! += 100;
+        let reminder = {
+            id: activity.id,
+            timestamps: activity.timestamps,
+            type: activity.type,
+        };
+        this.user.activities.hasReminder.push(reminder);
+        return reminder;
+    }
 
     /**
      *
-     * @param property keyof Groups object
-     * @param value value to query the groups array
-     * @returns group or array of groups
+     * @param idea
+     * @returns
      */
-    getByProperty(property: keyof Group, value: any) {
-        let result = this.groups.getBy(property, value);
-        return result;
+    SubmitIdea(idea: Idea): Idea {
+        this.user.points! += 100;
+        return idea;
     }
-
-    vote() {}
-    abstract getGroup(): Group;
 }
-
+/**
+ * @abstract activeUser contains all user data
+ */
 @registerEndpoint
-export class activeUser extends User {
-    constructor(name: string) {
-        super(name);
-    }
-    getGroup(): Group {
-        return this.groups[0];
+export class activeUser extends ActiveSubject {
+    constructor(user: User) {
+        super(user);
     }
 }
