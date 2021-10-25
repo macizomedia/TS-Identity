@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "module": "esnext",
         "experimentalDecorators": true,
     },
     "extends": "@tsconfig/node16/tsconfig.json"

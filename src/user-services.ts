@@ -1,15 +1,7 @@
 import { updateOne } from './store.js';
-import {
-    Activity,
-    Idea,
-    Project,
-    State,
-    Subject,
-    Group,
-    Post,
-    User,
-} from './types';
+
 import fetch from 'node-fetch';
+import { State, Subject, Group, Idea, Activity, Project, User } from './types.js';
 
 export async function api<T>(url: string): Promise<T> {
     const response = await fetch(url, {

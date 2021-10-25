@@ -1,5 +1,5 @@
 import fetch, { RequestInfo, RequestInit, FetchError } from 'node-fetch';
-import { api } from './utils.js';
+import { queryAPI } from './utils.js';
 enum StatusCode {
     Unauthorized = '401',
     Forbidden = '403',
@@ -34,16 +34,19 @@ export abstract class http {
         public config: RequestInit
     ) {}
 
-    init<T, K>() {
+    init() {
         /* injectToken(this.config) */
         const endpoint = `http://${this.baseUrl}/${this.endpoint}`;
         try {
-            api<T, K>(endpoint).then((data) => {
-                this.response = data as T;
+            queryAPI(endpoint).then((data) => {
+                this.response = data;
             });
         } catch (error) {
             this.handleError(error as unknown as FetchError);
         }
+    }
+    getEndpoint() {
+        queryAPI(`http://${this.baseUrl}/${this.endpoint}`);
     }
     private handleError(error: FetchError) {
         const { code } = error;

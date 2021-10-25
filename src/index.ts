@@ -1,4 +1,3 @@
-import { api } from './utils.js';
 import {
     Activity,
     Idea,
@@ -9,51 +8,52 @@ import {
     Post,
     User,
 } from './types';
-import { ActiveSubject, activeUser } from './user-services.js';
-import { http, httpGet } from './http.js';
-import { groupCollapsed } from 'console';
+import { buildUser, createUser } from './http/index.js';
+import { activeUser } from './user-services.js';
 
-const BASE_URL = 'localhost:4000';
-
-const headers = {
-    Accept: 'application/json',
-    'Content-Type': 'application/json; charset=utf-8',
-    'Access-Control-Allow-Credentials': 'true',
-    'X-Requested-With': 'XMLHttpRequest',
-};
-
-let groups = new httpGet(BASE_URL, 'groups', { headers });
-groups.init();
-
-class activateUserInstance {
-    protected connection!: httpGet;
-    protected user!: any;
-    constructor(public uri: string, public id: string) {}
-
-    async connect() {
-        this.connection = new httpGet(this.uri, this.id, {});
-        this.connection.init<Partial<User>, any>();
-    }
-
-    getUserConection() {
-        return this.connection;
-    }
-    async getDetails() {
-        return new activeUser(this.connection.response);
-    }
+async function registerNewUser<T>(payload: T) {
+    return new Promise((resolve) => {
+        let api = createUser(payload);
+        api.post();
+        setTimeout(() => {
+            resolve(api.getToken());
+        }, 2000);
+    });
 }
 
-export function instanceOfUser(id: string) {
-    let user = new activateUserInstance(BASE_URL, id);
-    user.connect();
-    return user;
+async function builNewUser(token: string) {
+    return new Promise((resolve) => {
+        let api = buildUser(token);
+        api.getUser();
+        setTimeout(() => {
+            let alpha = new activeUser(api.getToken());
+            resolve(alpha);
+        }, 2000);
+    });
 }
 
-let id = `user/bfda98bb-68e3-4e31-a85f-6b7c3371a0f6`;
-const user = instanceOfUser(id);
+let token = registerNewUser<{
+    username: string;
+    email: string;
+    password: string;
+}>({
+    username: 'pendejo',
+    email: 'doma@mail.com',
+    password: 'arepas',
+});
 
 setTimeout(async () => {
-    let details = await user.getDetails();
-
-    console.log(JSON.stringify(details, null, 4));
+    token.then((res) => {
+        if (res) {
+            let t = res as unknown as { token: string };
+            setTimeout(() => {
+                let user = builNewUser(t.token);
+                user.then((res) => {
+                    console.log(res);
+                });
+            }, 2000);
+        }
+    });
 }, 4000);
+
+setTimeout(() => {}, 5000);
