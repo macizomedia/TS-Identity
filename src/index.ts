@@ -1,59 +1,40 @@
-import {
-    Activity,
-    Idea,
-    Project,
-    State,
-    Subject,
-    Group,
-    Post,
-    User,
-} from './types';
 import { buildUser, createUser } from './http/index.js';
+import { Subscriber, User } from './types.js';
 import { activeUser } from './user-services.js';
 
 async function registerNewUser<T>(payload: T) {
     return new Promise((resolve) => {
         let api = createUser(payload);
-        api.post();
+        api.registerUser();
         setTimeout(() => {
             resolve(api.getToken());
         }, 2000);
     });
 }
 
-async function builNewUser(token: string) {
+async function buildNewUser(token: string) {
     return new Promise((resolve) => {
         let api = buildUser(token);
         api.getUser();
         setTimeout(() => {
-            let alpha = new activeUser(api.getToken());
+            let alpha = new activeUser(api.getDetails());
             resolve(alpha);
         }, 2000);
     });
 }
+export const createInstaceOfUser = (payload: Partial<Subscriber>) => {
+    return new Promise(async (resolve) => {
+        let response = await registerNewUser<Partial<User>>(payload);
+        const { token } = response as unknown as { token: string };
+        let user = buildNewUser(token);
+        user.then(res => resolve(res))
+    });
+};
 
-let token = registerNewUser<{
-    username: string;
-    email: string;
-    password: string;
-}>({
-    username: 'pendejo',
-    email: 'doma@mail.com',
+const instance = createInstaceOfUser({
+    username: 'Alfred',
+    email: 'popo@domamail.com',
     password: 'arepas',
 });
 
-setTimeout(async () => {
-    token.then((res) => {
-        if (res) {
-            let t = res as unknown as { token: string };
-            setTimeout(() => {
-                let user = builNewUser(t.token);
-                user.then((res) => {
-                    console.log(res);
-                });
-            }, 2000);
-        }
-    });
-}, 4000);
-
-setTimeout(() => {}, 5000);
+instance.then((res) => console.log(res));

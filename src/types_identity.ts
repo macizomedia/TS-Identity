@@ -9,7 +9,7 @@ export enum UserRole {
 }
 interface BaseUser {
   id?: string;
-  name: string;
+  username: string;
   location: string;
   avatar: string;
   settings?: Setting;
@@ -18,7 +18,7 @@ interface BaseUser {
 
 export interface User extends BaseUser {
   id?: string;
-  name: string;
+  username: string;
   location: string;
   avatar: string;
   settings?: Setting;

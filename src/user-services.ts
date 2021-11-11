@@ -130,7 +130,7 @@ function endpoint(id: string) {
 }
 
 export abstract class ActiveSubject {
-    constructor(protected user: User) {}
+    constructor(protected user: Partial<User>) {}
     /**
      *
      * @param group object increase 100 points
@@ -138,7 +138,7 @@ export abstract class ActiveSubject {
      */
     CreateGroup(groupID: Group['id']): Group['id'] {
         this.user.points! += 100;
-        this.user.groups.isAdmin.push(groupID);
+        this.user.groups!.isAdmin.push(groupID);
         console.log(`group created with id ` + groupID);
         return groupID;
     }
@@ -147,7 +147,7 @@ export abstract class ActiveSubject {
      * @param group To follow a group
      */
     FollowGroup(groupID: Group['id']) {
-        this.user.groups.isFollower.push(groupID);
+        this.user.groups!.isFollower.push(groupID);
     }
     /**
      *
@@ -156,7 +156,7 @@ export abstract class ActiveSubject {
      */
     CreateActivity(activityID: Activity['id']): Activity['id'] {
         this.user.points! += 100;
-        this.user.activities.isAdmin.push(activityID);
+        this.user.activities!.isAdmin.push(activityID);
         return activityID;
     }
     /**
@@ -173,7 +173,7 @@ export abstract class ActiveSubject {
             timestamps: activity.timestamps,
             type: activity.type,
         };
-        this.user.activities.hasReminder.push(reminder);
+        this.user.activities!.hasReminder.push(reminder);
         return reminder;
     }
 
@@ -192,7 +192,7 @@ export abstract class ActiveSubject {
  */
 @registerEndpoint
 export class activeUser extends ActiveSubject {
-    constructor(user: User) {
+    constructor(user: Partial<User>) {
         super(user);
     }
 }

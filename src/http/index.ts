@@ -1,4 +1,5 @@
 import fetch, { RequestInfo, RequestInit, FetchError } from 'node-fetch';
+import { User } from '../types';
 
 /**
  *
@@ -17,40 +18,35 @@ const headers = {
     'X-Requested-With': 'XMLHttpRequest',
 };
 
-const get = (url: string) =>
+const get = <T>(url: string): Promise<T> =>
     new Promise((resolve, reject) => {
         fetch(url).then((res) => {
             if (!res.ok) {
                 reject(res.status);
             }
-            resolve(res.json());
+            resolve(res.json() as unknown as T);
         });
     });
 
-async function api<T, K>(url: string, params?: K, init?: RequestInit) {
+const post = async <T>(
+    url: string,
+    payload?: any,
+    init?: RequestInit
+): Promise<T> => {
     const { headers } = init || {};
 
-    if (params !== null) {
-        console.log(params);
-        const response = await fetch(url, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(params),
-        });
-        if (!response.ok) {
-            throw new Error(response.statusText);
-        }
-        const json = await response.json();
-        return json;
+    const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+        throw new Error(response.statusText);
     }
-
-    const response_1 = await fetch(url);
-    if (!response_1.ok) {
-        throw new Error(response_1.statusText);
-    }
-    const json = await response_1.json();
-    return json;
-}
+    const json = await response.json();
+    console.log(json);
+    return json as T;
+};
 
 enum StatusCode {
     Unauthorized = '401',
@@ -76,7 +72,9 @@ const injectToken = (config: any): any => {
  * @class http wrapper of node-fetch
  */
 export abstract class http {
-    response: any;
+    response!: Partial<User>;
+    token!: Promise<{ token: string }>;
+
     /**
      *
      * @param base Base URL string
@@ -94,17 +92,17 @@ export abstract class http {
         /* injectToken(this.config) */
         const path = `http://${this.baseUrl}/${this.endpoint}`;
         try {
-            get(path).then((res) => {
+            get<Partial<User>>(path).then((res) => {
                 this.response = res;
             });
         } catch (error) {
             this.handleError(error as unknown as FetchError);
         }
     }
-    async post<T, K>() {
+    registerUser() {
         const path = `http://${this.baseUrl}/${this.endpoint}`;
         try {
-            this.response = await api<T, K>(path, this.body, this.config);
+            this.token = post<{ token: string }>(path, this.body, this.config);
         } catch (error) {
             this.handleError(error as unknown as FetchError);
         }
@@ -149,6 +147,9 @@ export class httpUserService extends http {
         super(baseUrl, endpoint, config, body);
     }
     getToken() {
+        return this.token
+    }
+    getDetails() {
         return this.response;
     }
 }
@@ -171,7 +172,7 @@ const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 const runAsync = async (cb: any) => {
     await delay(2000);
-    cb('Some Function')
-}
+    cb('Some Function');
+};
 
-runAsync((time: any) => console.log(time))  
+runAsync((time: any) => console.log(time));

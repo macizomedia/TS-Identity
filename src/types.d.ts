@@ -17,7 +17,7 @@ enum Role {
 
 type BaseSubject = {
     id: string | number;
-    name: string;
+    username: string;
     email: string;
     profile: string;
     role: Role.user;
@@ -33,7 +33,7 @@ type Settings = {
 
 export interface Subscriber extends BaseSubject {
     id: number;
-    name: string;
+    username: string;
     profile: string;
     email: string;
     password: string;
@@ -47,7 +47,7 @@ export interface Subscriber extends BaseSubject {
 
 export interface User extends BaseSubject {
     id: number;
-    name: string;
+    username: string;
     profile: string;
     email: string;
     role: Role.user;
